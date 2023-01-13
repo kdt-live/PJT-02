@@ -1,10 +1,44 @@
 import requests
 from pprint import pprint
 
+BASE_URL = "https://api.themoviedb.org/3"
+path1 = "/search/movie" 
+
+params = {
+    "api_key": "e89f1ac075fe652da53b26e8466adbac",
+    "language": "ko-KR",
+    "region": "KR",
+}
 
 def credits(title):
     pass
     # 여기에 코드를 작성합니다.
+    params["query"] = title
+    response = requests.get(BASE_URL+path1, params=params).json()
+    responseLi = response.get("results")
+    if len(responseLi) > 0:
+        movie_id = responseLi[0].get("id")
+        path2 = f"/movie/{movie_id}/credits"
+        params["movie_id"] = movie_id
+        credit = requests.get(BASE_URL+path2, params=params).json()
+        cast = credit.get("cast")
+        castReturn = []
+        for i in cast:
+            if i.get("cast_id") < 10.0:
+                castReturn.append(i.get("name"))
+        crew = credit.get("crew")
+        directingReturn = []
+        for i in crew:
+            if i.get("department") == "Directing":
+                directingReturn.append(i.get("name"))
+        def movieInfo():
+            mvif = {}
+            mvif["cast"] = castReturn
+            mvif["crew"] = directingReturn
+            return mvif
+        return movieInfo()
+    else:
+        return("None")
 
 
 # 아래의 코드는 수정하지 않습니다.
